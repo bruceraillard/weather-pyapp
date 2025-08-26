@@ -1,72 +1,65 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Météo à Nouméa</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #89f7fe, #66a6ff);
-      color: #222;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .card {
-      background: white;
-      padding: 2.5rem 3rem;
-      border-radius: 20px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-      text-align: center;
-      max-width: 400px;
-      width: 90%;
-    }
-
-    h1 {
-      font-size: 1.8rem;
-      color: #0077b6;
-      margin-bottom: 1.5rem;
-    }
-
-    .value {
-      font-size: 2.5rem;
-      font-weight: bold;
-      margin-bottom: 1.2rem;
-    }
-
-    .label {
-      font-size: 1.1rem;
-      margin-bottom: 1.5rem;
-      color: #555;
-    }
-
-    .emoji {
-      font-size: 1.5rem;
-      margin-right: 0.5rem;
-    }
-
-    footer {
-      margin-top: 2rem;
-      font-size: 0.85rem;
-      color: #666;
-    }
-  </style>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Météo à Nouméa</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
+<!--
+  Le conteneur #app expose les valeurs initiales en data-*
+  JS lira ces attributs (et pourra aussi /api/weather pour rafraîchir)
+-->
+<main id="app"
+      data-temp="{{ weather.temperature if weather else '' }}"
+      data-wind="{{ weather.wind if weather else '' }}"
+      data-clouds="{{ weather.clouds if weather else '' }}"
+      data-rain="{{ weather.rain if weather else '' }}"
+      data-generated="{{ generated_at }}"
+      data-visits="{{ visits }}">
 
-  <div class="card">
-    <h1>Météo à Nouméa </h1>
+    <!-- Ciel animé (couches) -->
+    <div class="sky">
+        <div class="sun" aria-hidden="true"></div>
+        <div class="clouds" aria-hidden="true">
+            <div class="cloud c1"></div>
+            <div class="cloud c2"></div>
+            <div class="cloud c3"></div>
+        </div>
+        <div class="rain" aria-hidden="true"></div>
+        <div class="wind" aria-hidden="true">
+            <span class="gust g1"></span>
+            <span class="gust g2"></span>
+            <span class="gust g3"></span>
+        </div>
+    </div>
 
-    <div class="value">{{ temperature }}°C</div>
-    <div class="label"><span class="emoji"></span>Ce site à était visité  : {{ visits }} fois.</div>
+    <!-- Carte météo -->
+    <section class="card" role="region" aria-label="Météo actuelle Nouméa">
+        <h1>Météo à Nouméa</h1>
 
-    <footer>via <a href=https://open-meteo.com/>Open-Meteo</a></footer>
-  </div>
+        {% if weather %}
+        <div class="temp" id="tempValue">{{ weather.temperature }}°C</div>
+        <div class="chips">
+            <div class="chip" id="windValue">💨 {{ weather.wind }} km/h</div>
+            <div class="chip" id="cloudsValue">☁️ {{ weather.clouds }}%</div>
+            <div class="chip" id="rainValue">🌧️ {{ weather.rain }} mm</div>
+        </div>
+        {% else %}
+        <p id="fallbackMsg">Impossible de récupérer la météo pour le moment.</p>
+        {% endif %}
 
+        <footer>
+            <small>
+                Généré le <span id="generatedAt">{{ generated_at }}</span> — Visites : <span id="visitsCount">{{ visits }}</span><br>
+                via <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> —
+                <a href="/api/weather">API JSON</a>
+            </small>
+        </footer>
+    </section>
+</main>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

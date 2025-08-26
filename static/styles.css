@@ -1,0 +1,267 @@
+:root {
+    --bg1: #74ebd5;
+    --bg2: #9face6;
+    --card: #ffffff;
+    --primary: #0077b6;
+    --text: #222;
+    --muted: #666;
+    --chip: #f5f7fa;
+    --shadow: 0 8px 25px rgba(0, 0, 0, .15);
+    --radius: 20px;
+    --radius-sm: 14px;
+}
+
+/* Thèmes météo (appliqués sur <body> par JS) */
+body.sunny {
+    --bg1: #87e0ff;
+    --bg2: #ffe29f;
+}
+
+/* bleu -> doré */
+body.cloudy {
+    --bg1: #cfd9df;
+    --bg2: #e2ebf0;
+}
+
+/* gris doux */
+body.rainy {
+    --bg1: #4e54c8;
+    --bg2: #8f94fb;
+}
+
+/* violet/bleu pluie */
+body.windy { /* accent vent ajouté par JS via .windy en plus du reste */
+}
+
+* {
+    box-sizing: border-box
+}
+
+html, body {
+    height: 100%
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--text);
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+/* Ciel animé plein écran derrière la carte */
+.sky {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Soleil */
+.sun {
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%, #fff78a, #ffd166 60%, #ffad33 100%);
+    top: 8vh;
+    right: 8vw;
+    box-shadow: 0 0 60px 10px rgba(255, 209, 102, .6);
+    opacity: .95;
+    transform-origin: center;
+    animation: sunPulse 6s ease-in-out infinite;
+    display: none; /* visible en mode .sunny */
+}
+
+@keyframes sunPulse {
+    0%, 100% {
+        transform: scale(1)
+    }
+    50% {
+        transform: scale(1.06)
+    }
+}
+
+/* Nuages */
+.clouds .cloud {
+    position: absolute;
+    background: #fff;
+    border-radius: 50px;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, .08));
+    opacity: .9;
+}
+
+.clouds .c1 {
+    width: 240px;
+    height: 80px;
+    top: 12vh;
+    left: -20%;
+    animation: cloudDrift 55s linear infinite;
+}
+
+.clouds .c2 {
+    width: 300px;
+    height: 95px;
+    top: 22vh;
+    left: -30%;
+    animation: cloudDrift 75s linear infinite;
+}
+
+.clouds .c3 {
+    width: 200px;
+    height: 70px;
+    top: 35vh;
+    left: -25%;
+    animation: cloudDrift 65s linear infinite;
+}
+
+@keyframes cloudDrift {
+    0% {
+        transform: translateX(0)
+    }
+    100% {
+        transform: translateX(140vw)
+    }
+}
+
+/* Pluie */
+.rain {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(255, 255, 255, .0), rgba(255, 255, 255, .0) 95%, rgba(255, 255, 255, .7) 100%);
+    background-size: 2px 20px;
+    animation: rainFall .6s linear infinite;
+    opacity: 0; /* activée en .rainy */
+}
+
+@keyframes rainFall {
+    0% {
+        background-position: 0 0
+    }
+    100% {
+        background-position: 0 20px
+    }
+}
+
+/* Vent : petites rafales */
+.wind .gust {
+    position: absolute;
+    width: 120px;
+    height: 2px;
+    background: rgba(255, 255, 255, .8);
+    top: 20vh;
+    left: -20%;
+    border-radius: 2px;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, .5));
+}
+
+.wind .g1 {
+    animation: gust 4s linear infinite;
+    top: 28vh;
+    width: 140px
+}
+
+.wind .g2 {
+    animation: gust 5.5s linear infinite;
+    top: 42vh;
+    width: 110px
+}
+
+.wind .g3 {
+    animation: gust 6.5s linear infinite;
+    top: 58vh;
+    width: 160px
+}
+
+@keyframes gust {
+    0% {
+        transform: translateX(0)
+    }
+    100% {
+        transform: translateX(130vw)
+    }
+}
+
+/* Carte */
+.card {
+    position: relative;
+    z-index: 1;
+    width: min(440px, 92vw);
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 2rem 1.75rem;
+    text-align: center;
+    backdrop-filter: blur(2px);
+    animation: fadeIn .6s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px)
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0)
+    }
+}
+
+h1 {
+    margin: 0 0 .8rem;
+    color: var(--primary);
+    font-size: clamp(1.3rem, 1rem + 1.6vw, 1.9rem);
+}
+
+.temp {
+    font-size: clamp(2.2rem, 1.6rem + 2.4vw, 3rem);
+    font-weight: 800;
+    margin: .35rem 0 .75rem;
+}
+
+.chips {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-top: .25rem;
+}
+
+.chip {
+    background: var(--chip);
+    border-radius: 999px;
+    padding: .45rem .9rem;
+    font-size: .95rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .06);
+}
+
+footer {
+    margin-top: 1rem;
+    color: var(--muted);
+    font-size: .9rem;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none
+}
+
+/* États dynamiques */
+body.sunny .sun {
+    display: block
+}
+
+body.cloudy .clouds {
+    opacity: 1
+}
+
+body.rainy .rain {
+    opacity: .5
+}
+
+body.windy .wind .gust {
+    opacity: .9
+}
